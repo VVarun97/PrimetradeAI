@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Task Management API
+  version: 1.0.0
+  description: API for user authentication, role-based access, and task management.
+servers:
+  - url: http://localhost:3000
+    description: Local server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        userId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+security:
+  - bearerAuth: []
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [user, admin]
+      responses:
+        201:
+          description: User created
+        400:
+          description: Validation error or user exists
+  /api/auth/login:
+    post:
+      summary: Login user
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login successful
+        400:
+          description: Invalid credentials
+  /api/auth/me:
+    get:
+      summary: Get current user profile
+      tags: [Auth]
+      responses:
+        200:
+          description: User profile
+        401:
+          description: Unauthorized
+  /api/tasks:
+    get:
+      summary: Get all tasks for logged in user
+      tags: [Tasks]
+      responses:
+        200:
+          description: List of tasks
+    post:
+      summary: Create a new task
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [pending, in-progress, completed]
+      responses:
+        201:
+          description: Task created
+  /api/tasks/{id}:
+    put:
+      summary: Update a task
+      tags: [Tasks]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+      responses:
+        200:
+          description: Task updated
+    delete:
+      summary: Delete a task
+      tags: [Tasks]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Task deleted
+  /api/tasks/all:
+    get:
+      summary: Get all tasks across all users (Admin only)
+      tags: [Tasks]
+      responses:
+        200:
+          description: List of all tasks
+        403:
+          description: Forbidden
