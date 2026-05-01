@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Plus, Trash2, Edit } from 'lucide-react';
+import { LogOut, Plus, Trash2 } from 'lucide-react';
 import api from '../api';
 
 interface Task {
